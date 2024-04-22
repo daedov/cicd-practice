@@ -38,7 +38,7 @@ jobs:
       - name: Build the application
         run: npm run build
       - name: Archive build output
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: nestjs-build
           path: dist/ 
