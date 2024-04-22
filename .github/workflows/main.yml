@@ -35,3 +35,23 @@ jobs:
           GITHUB_PULL_BASE_SHA: ${{ github.event.pull_request.base.sha }}
           GITHUB_DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
           GITGUARDIAN_API_KEY: ${{ secrets.GITGUARDIAN_API_KEY }}
+  artifacts:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Build the application
+        run: npm run build
+      - name: Archive build output
+        uses: actions/upload-artifact@v3
+        with:
+          name: nestjs-build
+          path: dist/  
+      - name: Publish artifact to GitHub Packages
+        uses: actions/upload-artifact@v3
+        with:
+          name: build-artifact
+          path: dist/  
