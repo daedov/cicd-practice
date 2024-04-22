@@ -35,10 +35,6 @@ jobs:
           GITHUB_PULL_BASE_SHA: ${{ github.event.pull_request.base.sha }}
           GITHUB_DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
           GITGUARDIAN_API_KEY: ${{ secrets.GITGUARDIAN_API_KEY }}
-  artifacts:
-    needs: build
-    runs-on: ubuntu-latest
-    steps:
       - name: Build the application
         run: npm run start:prod
       - name: Archive build output
