@@ -44,7 +44,7 @@ jobs:
         with:
           fetch-depth: 0
       - name: Build the application
-        run: npm run build:prod
+        run: npm run start:prod
       - name: Archive build output
         uses: actions/upload-artifact@v3
         with:
