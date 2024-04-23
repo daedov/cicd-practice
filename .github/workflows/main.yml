@@ -3,43 +3,76 @@ name: CI/CD Pipeline
 on:
   push:
     branches:
-      - main
-      - develop
+      - '*'
   pull_request:
-      types: [opened, synchronize, reopened]
+    branches:
+      - '*'
 
 jobs:
-  build:
+  setup:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '20'
       - name: Install dependencies
         run: npm install
-      - name: Build the application
-        run: npm run build
-      - name: Test and coverage
+  test:
+    needs: setup
+    runs-on: ubuntu-latest
+    steps:
+      - name: Test application
+        run: npm run test
+      - name: Coverage report
         run: npm run test:cov
+  lint:
+    needs: setup
+    runs-on: ubuntu-latest
+    steps:
+      - run: npm run lint
+  static-analysis:
+    needs: setup
+    runs-on: ubuntu-latest
+    steps:
       - name: SonarCloud Scan
         uses: sonarsource/sonarcloud-github-action@master
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+  security-check:
+    needs: setup
+    runs-on: ubuntu-latest
+    steps:
       - name: GitGuardian scan
         uses: GitGuardian/ggshield/actions/secret@v1.26.0
         env:
           GITHUB_PUSH_BEFORE_SHA: ${{ github.event.before }}
-          GITHUB_PUSH_BASE_SHA: ${{ github.event.base }}
           GITHUB_PULL_BASE_SHA: ${{ github.event.pull_request.base.sha }}
           GITHUB_DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
           GITGUARDIAN_API_KEY: ${{ secrets.GITGUARDIAN_API_KEY }}
+  build:
+    needs: [setup, test, lint, static-analysis, security-check]
+    runs-on: ubuntu-latest  
+    steps:
       - name: Build the application
         run: npm run build
-      - name: Archive build output
+      - name: Upload Artifact
+        if: github.ref == 'refs/heads/main'  
         uses: actions/upload-artifact@v4
         with:
-          name: nestjs-build
-          path: dist/ 
+          name: nestjs-artifact
+          path: dist/
+      - name: Publish to Artifact Repository
+        run: echo "Publish artifact to repository" 
+  deploy:
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    steps:
+      - name: Deploy to Kubernetes 
+        run: echo "Deploying with ArgoCD"
 
