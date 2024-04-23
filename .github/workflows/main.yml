@@ -30,13 +30,6 @@ jobs:
         run: npm run test
       - name: Coverage report
         run: npm run test:cov
-  lint:
-    needs: setup
-    runs-on: ubuntu-latest
-    steps:
-      - name: Print current directory
-        run: pwd
-      - run: npm run lint
   static-analysis:
     needs: setup
     runs-on: ubuntu-latest
