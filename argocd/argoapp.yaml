@@ -11,7 +11,7 @@ spec:
     server: https://kubernetes.default.svc
   project: default
   source:
-    path: src
+    path: k8s
     repoURL: https://github.com/daedov/cicd-kc
     targetRevision: main
   syncPolicy:
