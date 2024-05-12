@@ -20,8 +20,10 @@ jobs:
         id: cache_modules
         uses: actions/cache@v4
         with:
-          path: 'node_modules'
-          key: ${{ runner.os }}-node_module-${{ hashFiles('package-lock.json') }}-${{ hashFiles('.github/workflows/main.yaml') }}
+          path: node_modules
+          key: ${{ runner.os }}-npm-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-npm-
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
