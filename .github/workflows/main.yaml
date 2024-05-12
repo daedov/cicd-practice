@@ -4,12 +4,13 @@ on:
   push:
     branches:
       - main
+      - develop
   pull_request:
     branches:
       - main
 
 jobs:
-  setup:
+  build_and_deploy:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -54,22 +55,25 @@ jobs:
       - name: Build the application
         run: npm run build
       - name: Archive build artifacts
+        if: github.ref == 'refs/heads/main'
         uses: actions/upload-artifact@v4
         with:
-          name: build-artifacts
+          name: Build artifacts
           path: dist/
       - name: Docker meta
+        if: github.ref == 'refs/heads/main'
         id: meta
         uses: docker/metadata-action@v5
         with:
           images: ${{ secrets.DOCKERHUB_USERNAME }}/app
       - name: Login to DockerHub
-        if: github.event_name != 'pull_request'
+        if: github.ref == 'refs/heads/main'
         uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
       - name: Build and push
+        if: github.ref == 'refs/heads/main'
         uses: docker/build-push-action@v5
         with:
           context: .
