@@ -36,7 +36,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: Coverage report artifacts
-          path: coverage/lcov-report/index.html
+          path: coverage/
       - name: SonarCloud Scan
         uses: sonarsource/sonarcloud-github-action@master
         env:
@@ -51,11 +51,11 @@ jobs:
           GITGUARDIAN_API_KEY: ${{ secrets.GITGUARDIAN_API_KEY }}
       - name: Build the application
         run: npm run build
-      - name: Archive artifacts
+      - name: Archive build artifacts
         uses: actions/upload-artifact@v4
         with:
           name: build-artifacts
-          path: dist
+          path: dist/
       - name: Docker meta
         id: meta
         uses: docker/metadata-action@v5
