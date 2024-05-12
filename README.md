@@ -31,4 +31,4 @@ Para la práctica se debe implementar un pipeline de CI/CD para una aplicación.
 ![](./images/sonar.png)
 - Screenshot del proyecto en GitGuardian:
 ![](./images/gitguardian.png)
-- Enlace a vídeo: aqui
+- Enlace a vídeo: 
