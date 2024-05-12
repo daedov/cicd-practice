@@ -9,7 +9,7 @@ on:
     branches:
       - main
 jobs:
-  setup:
+  build_and_deploy:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -28,10 +28,17 @@ jobs:
       - name: Install dependencies
         if: steps.cache_modules.outputs.cache-hit != 'true'
         run: npm install
+      - name: Lint code
+        run: npm run lint
       - name: Test application
         run: npm run test
       - name: Coverage report
         run: npm run test:cov
+      - name: Archive code coverage
+        uses: actions/upload-artifact@v4
+        with:
+          name: Coverage report artifacts
+          path: coverage/
       - name: SonarCloud Scan
         uses: sonarsource/sonarcloud-github-action@master
         env:
@@ -46,18 +53,26 @@ jobs:
           GITGUARDIAN_API_KEY: ${{ secrets.GITGUARDIAN_API_KEY }}
       - name: Build the application
         run: npm run build
+      - name: Archive build artifacts
+        if: github.ref == 'refs/heads/main'
+        uses: actions/upload-artifact@v4
+        with:
+          name: Build artifacts
+          path: dist/
       - name: Docker meta
+        if: github.ref == 'refs/heads/main'
         id: meta
         uses: docker/metadata-action@v5
         with:
           images: ${{ secrets.DOCKERHUB_USERNAME }}/app
       - name: Login to DockerHub
-        if: github.event_name != 'pull_request'
+        if: github.ref == 'refs/heads/main'
         uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
       - name: Build and push
+        if: github.ref == 'refs/heads/main'
         uses: docker/build-push-action@v5
         with:
           context: .
