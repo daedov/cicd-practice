@@ -22,6 +22,8 @@ jobs:
         with:
           path: ~/.npm
           key: ${{ runner.os }}-npm-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-npm-
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
@@ -42,11 +44,6 @@ jobs:
         with:
           name: Coverage report artifacts
           path: coverage/
-      - name: Cache SonarCloud
-        uses: actions/cache@v3
-        with:
-          path: ~/.sonar/cache
-          key: ${{ runner.os }}-sonar
       - name: SonarCloud Scan
         uses: sonarsource/sonarcloud-github-action@master
         env:
