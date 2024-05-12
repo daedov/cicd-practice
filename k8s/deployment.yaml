@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: node-api
-        image: daedov1/app-node:1.0
+        image: ghcr.io/daedov/cicd-kc:{{ image_tag }}
         ports:
         - containerPort: 3000 
         resources:
