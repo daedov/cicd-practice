@@ -71,7 +71,7 @@ jobs:
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }} 
       - name: Actualizar manifiestos con la nueva etiqueta de imagen
-        run: sed -i "s/{{ image_tag }}/${{ steps.meta.outputs.tags }}/g" k8s/deployment.yaml 
+        run: sed -i "s,{{ image_tag }},${{ steps.meta.outputs.tags }},g" k8s/deployment.yaml 
       - name: Deploy to Kubernetes 
         run: kubectl apply -f argocd/argoapp.yaml
 
